@@ -27,7 +27,8 @@ contract WeirollWalletHelperTest is Test {
         uint256 lockedUntil,
         bool forfeitable,
         uint256 marketId,
-        uint256 timestamp
+        uint256 timestamp,
+        uint256 walletNativeBalance
     )
         public
     {
@@ -36,19 +37,22 @@ contract WeirollWalletHelperTest is Test {
 
         address cloneAddress = WEIROLL_WALLET_IMPLEMENTATION.clone(data);
         weirollWallet = WeirollWallet(payable(cloneAddress));
+        vm.deal(cloneAddress, walletNativeBalance);
 
         // Prepare the command to call owner()
-        bytes32[] memory commands = new bytes32[](8);
-        bytes[] memory state = new bytes[](8);
+        bytes32[] memory commands = new bytes32[](10);
+        bytes[] memory state = new bytes[](10);
 
-        commands[0] = buildDelegateCallCommand(WeirollWallet.owner.selector, 0);
-        commands[1] = buildDelegateCallCommand(WeirollWallet.recipeKernel.selector, 1);
-        commands[2] = buildDelegateCallCommand(WeirollWallet.amount.selector, 2);
-        commands[3] = buildDelegateCallCommand(WeirollWallet.lockedUntil.selector, 3);
-        commands[4] = buildDelegateCallCommand(WeirollWallet.isForfeitable.selector, 4);
-        commands[5] = buildDelegateCallCommand(WeirollWallet.marketId.selector, 5);
-        commands[6] = buildDelegateCallCommand(bytes4(keccak256("executed()")), 6);
-        commands[7] = buildDelegateCallCommand(bytes4(keccak256("forfeited()")), 7);
+        commands[0] = buildDelegateCallCommand(bytes4(keccak256("thisWallet()")), 0);
+        commands[1] = buildDelegateCallCommand(bytes4(keccak256("nativeBalance()")), 1);
+        commands[2] = buildDelegateCallCommand(WeirollWallet.owner.selector, 2);
+        commands[3] = buildDelegateCallCommand(WeirollWallet.recipeKernel.selector, 3);
+        commands[4] = buildDelegateCallCommand(WeirollWallet.amount.selector, 4);
+        commands[5] = buildDelegateCallCommand(WeirollWallet.lockedUntil.selector, 5);
+        commands[6] = buildDelegateCallCommand(WeirollWallet.isForfeitable.selector, 6);
+        commands[7] = buildDelegateCallCommand(WeirollWallet.marketId.selector, 7);
+        commands[8] = buildDelegateCallCommand(bytes4(keccak256("executed()")), 8);
+        commands[9] = buildDelegateCallCommand(bytes4(keccak256("forfeited()")), 9);
 
         // Time travel to the fuzzed timestamp
         vm.warp(timestamp);
@@ -58,7 +62,7 @@ contract WeirollWalletHelperTest is Test {
 
         bool forfeited = false;
 
-        // If forfeitable and locked, randomly choose to forfeit based on seed for later assertion
+        // If forfeitable and locked, randomly choose to forfeit for later assertion
         if (forfeitable && timestamp < lockedUntil) {
             if (uint256(keccak256(abi.encode(owner, recipeKernel, amount, lockedUntil, forfeitable, marketId))) % 2 == 1) {
                 weirollWallet.forfeit();
@@ -70,32 +74,40 @@ contract WeirollWalletHelperTest is Test {
         bytes[] memory outputs = weirollWallet.executeWeiroll(commands, state);
 
         // Decode and verify the output
-        address returnedOwner = abi.decode(outputs[0], (address));
+        address returnedWalletAddress = abi.decode(outputs[0], (address));
+        assertEq(returnedWalletAddress, cloneAddress);
+
+        // Decode and verify the output
+        uint256 returnedNativeBalance = abi.decode(outputs[1], (uint256));
+        assertEq(returnedNativeBalance, walletNativeBalance);
+
+        // Decode and verify the output
+        address returnedOwner = abi.decode(outputs[2], (address));
         assertEq(returnedOwner, owner);
 
         // Decode and verify the output
-        address returnedRecipeKernel = abi.decode(outputs[1], (address));
+        address returnedRecipeKernel = abi.decode(outputs[3], (address));
         assertEq(returnedRecipeKernel, recipeKernel);
 
         // Decode and verify the output
-        uint256 returnedAmount = abi.decode(outputs[2], (uint256));
+        uint256 returnedAmount = abi.decode(outputs[4], (uint256));
         assertEq(returnedAmount, amount);
 
         // Decode and verify the output
-        uint256 returnedLockedUntil = abi.decode(outputs[3], (uint256));
+        uint256 returnedLockedUntil = abi.decode(outputs[5], (uint256));
         assertEq(returnedLockedUntil, lockedUntil);
 
-        bool returnedForfeitable = abi.decode(outputs[4], (bool));
+        bool returnedForfeitable = abi.decode(outputs[6], (bool));
         assertEq(returnedForfeitable, forfeitable);
 
-        uint256 returnedMarketId = abi.decode(outputs[5], (uint256));
+        uint256 returnedMarketId = abi.decode(outputs[7], (uint256));
         assertEq(returnedMarketId, marketId);
 
         // Decode and verify the output
-        bool returnedExecuted = abi.decode(outputs[6], (bool));
+        bool returnedExecuted = abi.decode(outputs[8], (bool));
         assertEq(returnedExecuted, true);
 
-        bool returnedForfeited = abi.decode(outputs[7], (bool));
+        bool returnedForfeited = abi.decode(outputs[9], (bool));
         assertEq(returnedForfeited, forfeited);
 
         vm.stopPrank();

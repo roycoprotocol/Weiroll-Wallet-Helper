@@ -12,8 +12,10 @@ build_info = true
 evm_version="cancun"
 
 via_ir = true
-fuzz_runs = 1000
 deny_warnings = false
+
+[fuzz]
+runs = 10000
 
 [profile.default.optimizer_details]
 constantOptimizer = true

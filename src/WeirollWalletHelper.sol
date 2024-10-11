@@ -7,6 +7,20 @@ import { WeirollWallet } from "lib/royco/src/WeirollWallet.sol";
 /// @notice A helper contract to enable calling view functions of WeirollWallet via DELEGATECALL.
 /// @dev This contract contains view functions that can be called via DELEGATECALL to access the state of a WeirollWallet contract.
 contract WeirollWalletHelper {
+    /// @notice Gets the address of the WeirollWallet.
+    /// @dev Returns address(this) as a payable address.
+    /// @return The address of the WeirollWallet.
+    function thisWallet() external view returns (address payable) {
+        return payable(address(this));
+    }
+
+    /// @notice Gets the native balance of the WeirollWallet.
+    /// @dev Returns this.balance.
+    /// @return The ether balance of the WeirollWallet.
+    function nativeBalance() external view returns (uint256) {
+        return address(this).balance;
+    }
+
     /// @notice Gets the owner of the WeirollWallet.
     /// @dev Calls the `owner()` function of the WeirollWallet contract using `address(this)`.
     /// @return The address of the owner.
