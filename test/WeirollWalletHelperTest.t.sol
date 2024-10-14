@@ -22,7 +22,7 @@ contract WeirollWalletHelperTest is Test {
 
     function testFuzz_WeirollWalletHelper(
         address owner,
-        address recipeKernel,
+        address recipeMarketHub,
         uint256 amount,
         uint256 lockedUntil,
         bool forfeitable,
@@ -33,7 +33,7 @@ contract WeirollWalletHelperTest is Test {
         public
     {
         // Clone the WeirollWallet with immutable args
-        bytes memory data = abi.encodePacked(owner, recipeKernel, amount, lockedUntil, forfeitable, marketHash);
+        bytes memory data = abi.encodePacked(owner, recipeMarketHub, amount, lockedUntil, forfeitable, marketHash);
 
         address cloneAddress = WEIROLL_WALLET_IMPLEMENTATION.clone(data);
         weirollWallet = WeirollWallet(payable(cloneAddress));
@@ -46,7 +46,7 @@ contract WeirollWalletHelperTest is Test {
         commands[0] = buildDelegateCallCommand(bytes4(keccak256("thisWallet()")), 0);
         commands[1] = buildDelegateCallCommand(bytes4(keccak256("nativeBalance()")), 1);
         commands[2] = buildDelegateCallCommand(WeirollWallet.owner.selector, 2);
-        commands[3] = buildDelegateCallCommand(WeirollWallet.recipeKernel.selector, 3);
+        commands[3] = buildDelegateCallCommand(WeirollWallet.recipeMarketHub.selector, 3);
         commands[4] = buildDelegateCallCommand(WeirollWallet.amount.selector, 4);
         commands[5] = buildDelegateCallCommand(WeirollWallet.lockedUntil.selector, 5);
         commands[6] = buildDelegateCallCommand(WeirollWallet.isForfeitable.selector, 6);
@@ -57,14 +57,14 @@ contract WeirollWalletHelperTest is Test {
         // Time travel to the fuzzed timestamp
         vm.warp(timestamp);
 
-        // Simulate call from recipeKernel (if required by access control)
-        vm.startPrank(recipeKernel);
+        // Simulate call from recipeMarketHub (if required by access control)
+        vm.startPrank(recipeMarketHub);
 
         bool forfeited = false;
 
         // If forfeitable and locked, randomly choose to forfeit for later assertion
         if (forfeitable && timestamp < lockedUntil) {
-            if (uint256(keccak256(abi.encode(owner, recipeKernel, amount, lockedUntil, forfeitable, marketHash))) % 2 == 1) {
+            if (uint256(keccak256(abi.encode(owner, recipeMarketHub, amount, lockedUntil, forfeitable, marketHash))) % 2 == 1) {
                 weirollWallet.forfeit();
                 forfeited = true;
             }
@@ -86,8 +86,8 @@ contract WeirollWalletHelperTest is Test {
         assertEq(returnedOwner, owner);
 
         // Decode and verify the output
-        address returnedRecipeKernel = abi.decode(outputs[3], (address));
-        assertEq(returnedRecipeKernel, recipeKernel);
+        address returnedrecipeMarketHub = abi.decode(outputs[3], (address));
+        assertEq(returnedrecipeMarketHub, recipeMarketHub);
 
         // Decode and verify the output
         uint256 returnedAmount = abi.decode(outputs[4], (uint256));

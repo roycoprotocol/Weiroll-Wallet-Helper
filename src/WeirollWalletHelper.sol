@@ -28,11 +28,11 @@ contract WeirollWalletHelper {
         return WeirollWallet(payable(address(this))).owner();
     }
 
-    /// @notice Gets the address of the RecipeKernel contract associated with the WeirollWallet.
-    /// @dev Calls the `recipeKernel()` function of the WeirollWallet contract using `address(this)`.
-    /// @return The address of the RecipeKernel contract.
-    function recipeKernel() external view returns (address) {
-        return WeirollWallet(payable(address(this))).recipeKernel();
+    /// @notice Gets the address of the RecipeMarketHub contract associated with the WeirollWallet.
+    /// @dev Calls the `recipeMarketHub()` function of the WeirollWallet contract using `address(this)`.
+    /// @return The address of the RecipeMarketHub contract.
+    function recipeMarketHub() external view returns (address) {
+        return WeirollWallet(payable(address(this))).recipeMarketHub();
     }
 
     /// @notice Gets the amount of tokens deposited into the WeirollWallet.
