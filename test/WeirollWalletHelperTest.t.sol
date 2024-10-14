@@ -26,14 +26,14 @@ contract WeirollWalletHelperTest is Test {
         uint256 amount,
         uint256 lockedUntil,
         bool forfeitable,
-        uint256 marketId,
+        bytes32 marketHash,
         uint256 timestamp,
         uint256 walletNativeBalance
     )
         public
     {
         // Clone the WeirollWallet with immutable args
-        bytes memory data = abi.encodePacked(owner, recipeKernel, amount, lockedUntil, forfeitable, marketId);
+        bytes memory data = abi.encodePacked(owner, recipeKernel, amount, lockedUntil, forfeitable, marketHash);
 
         address cloneAddress = WEIROLL_WALLET_IMPLEMENTATION.clone(data);
         weirollWallet = WeirollWallet(payable(cloneAddress));
@@ -50,7 +50,7 @@ contract WeirollWalletHelperTest is Test {
         commands[4] = buildDelegateCallCommand(WeirollWallet.amount.selector, 4);
         commands[5] = buildDelegateCallCommand(WeirollWallet.lockedUntil.selector, 5);
         commands[6] = buildDelegateCallCommand(WeirollWallet.isForfeitable.selector, 6);
-        commands[7] = buildDelegateCallCommand(WeirollWallet.marketId.selector, 7);
+        commands[7] = buildDelegateCallCommand(WeirollWallet.marketHash.selector, 7);
         commands[8] = buildDelegateCallCommand(bytes4(keccak256("executed()")), 8);
         commands[9] = buildDelegateCallCommand(bytes4(keccak256("forfeited()")), 9);
 
@@ -64,7 +64,7 @@ contract WeirollWalletHelperTest is Test {
 
         // If forfeitable and locked, randomly choose to forfeit for later assertion
         if (forfeitable && timestamp < lockedUntil) {
-            if (uint256(keccak256(abi.encode(owner, recipeKernel, amount, lockedUntil, forfeitable, marketId))) % 2 == 1) {
+            if (uint256(keccak256(abi.encode(owner, recipeKernel, amount, lockedUntil, forfeitable, marketHash))) % 2 == 1) {
                 weirollWallet.forfeit();
                 forfeited = true;
             }
@@ -100,8 +100,8 @@ contract WeirollWalletHelperTest is Test {
         bool returnedForfeitable = abi.decode(outputs[6], (bool));
         assertEq(returnedForfeitable, forfeitable);
 
-        uint256 returnedMarketId = abi.decode(outputs[7], (uint256));
-        assertEq(returnedMarketId, marketId);
+        bytes32 returnedMarketHash = abi.decode(outputs[7], (bytes32));
+        assertEq(returnedMarketHash, marketHash);
 
         // Decode and verify the output
         bool returnedExecuted = abi.decode(outputs[8], (bool));

@@ -56,11 +56,11 @@ contract WeirollWalletHelper {
         return WeirollWallet(payable(address(this))).isForfeitable();
     }
 
-    /// @notice Gets the market ID associated with the WeirollWallet.
-    /// @dev Calls the `marketId()` function of the WeirollWallet contract using `address(this)`.
-    /// @return The market ID as a uint256.
-    function marketId() external view returns (uint256) {
-        return WeirollWallet(payable(address(this))).marketId();
+    /// @notice Gets the hash of the market associated with the WeirollWallet.
+    /// @dev Calls the `marketHash()` function of the WeirollWallet contract using `address(this)`.
+    /// @return The market hash as a bytes32.
+    function marketHash() external view returns (bytes32) {
+        return WeirollWallet(payable(address(this))).marketHash();
     }
 
     /// @notice Checks if the order associated with the WeirollWallet has been executed.
