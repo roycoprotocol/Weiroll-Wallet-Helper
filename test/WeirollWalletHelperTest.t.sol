@@ -43,16 +43,16 @@ contract WeirollWalletHelperTest is Test {
         bytes32[] memory commands = new bytes32[](10);
         bytes[] memory state = new bytes[](10);
 
-        commands[0] = buildDelegateCallCommand(bytes4(keccak256("thisWallet()")), 0);
-        commands[1] = buildDelegateCallCommand(bytes4(keccak256("nativeBalance()")), 1);
-        commands[2] = buildDelegateCallCommand(WeirollWallet.owner.selector, 2);
-        commands[3] = buildDelegateCallCommand(WeirollWallet.recipeMarketHub.selector, 3);
-        commands[4] = buildDelegateCallCommand(WeirollWallet.amount.selector, 4);
-        commands[5] = buildDelegateCallCommand(WeirollWallet.lockedUntil.selector, 5);
-        commands[6] = buildDelegateCallCommand(WeirollWallet.isForfeitable.selector, 6);
-        commands[7] = buildDelegateCallCommand(WeirollWallet.marketHash.selector, 7);
-        commands[8] = buildDelegateCallCommand(bytes4(keccak256("executed()")), 8);
-        commands[9] = buildDelegateCallCommand(bytes4(keccak256("forfeited()")), 9);
+        commands[0] = buildStaticCallCommand(bytes4(keccak256("thisWallet()")), 0);
+        commands[1] = buildStaticCallCommand(bytes4(keccak256("nativeBalance()")), 1);
+        commands[2] = buildStaticCallCommand(WeirollWallet.owner.selector, 2);
+        commands[3] = buildStaticCallCommand(WeirollWallet.recipeMarketHub.selector, 3);
+        commands[4] = buildStaticCallCommand(WeirollWallet.amount.selector, 4);
+        commands[5] = buildStaticCallCommand(WeirollWallet.lockedUntil.selector, 5);
+        commands[6] = buildStaticCallCommand(WeirollWallet.isForfeitable.selector, 6);
+        commands[7] = buildStaticCallCommand(WeirollWallet.marketHash.selector, 7);
+        commands[8] = buildStaticCallCommand(bytes4(keccak256("executed()")), 8);
+        commands[9] = buildStaticCallCommand(bytes4(keccak256("forfeited()")), 9);
 
         // Time travel to the fuzzed timestamp
         vm.warp(timestamp);
@@ -113,10 +113,10 @@ contract WeirollWalletHelperTest is Test {
         vm.stopPrank();
     }
 
-    // Helper function to build a Weiroll command for DELEGATECALL
-    function buildDelegateCallCommand(bytes4 selector, uint8 outputIndex) internal view returns (bytes32 command) {
-        // Flags: DELEGATECALL (calltype = 0x00)
-        uint8 f = 0x00;
+    // Helper function to build a Weiroll command for STATICCALL
+    function buildStaticCallCommand(bytes4 selector, uint8 outputIndex) internal view returns (bytes32 command) {
+        // Flags: STATICCALL (calltype = 0x02)
+        uint8 f = 0x02;
 
         // Input list: No arguments (END_OF_ARGS = 0xff)
         bytes6 inputData = hex"ffffffffffff";
