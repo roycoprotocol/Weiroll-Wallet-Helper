@@ -41,5 +41,5 @@ jobs:
 
       - name: Run Forge tests
         run: |
-          forge test -vvv
+           forge flatten --output src/WeirollWalletHelper.flattened.sol src/WeirollWalletHelper.sol && forge test -vvv
         id: test
