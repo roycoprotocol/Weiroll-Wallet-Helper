@@ -1,66 +1,29 @@
-## Foundry
+# WeirollWalletHelper
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## Overview
 
-Foundry consists of:
+This repository contains the implementation of a `WeirollWalletHelper` smart contract. The `WeirollWallet` is a smart contract wallet that can execute commands using the Weiroll VM. The `WeirollWalletHelper` is a utility contract that provides view functions to access the state of a `WeirollWallet` via STATICCALL in Weiroll scripts.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+## Contracts
 
-## Documentation
+### WeirollWalletHelper
 
-https://book.getfoundry.sh/
+The `WeirollWalletHelper` contract provides a set of view functions to access the state of a `WeirollWallet` contract. These functions can be called via STATICCALL to retrieve the following information:
 
-## Usage
+- Wallet address
+- Native balance
+- Owner address
+- RecipeMarketHub address
+- Token amount
+- Lock timestamp
+- Forfeitability
+- Market hash
+- Execution and forfeiture status
 
-### Build
+## License
 
-```shell
-$ forge build
-```
+This project is licensed under the MIT License.
 
-### Test
+## Disclaimer
 
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+This software is provided "as is", without warranty of any kind. Use at your own risk.
