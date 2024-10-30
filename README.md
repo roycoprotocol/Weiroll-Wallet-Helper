@@ -1,4 +1,4 @@
-# WeirollWalletHelper
+# WeirollWalletHelper [![Tests](https://github.com/roycoprotocol/weiroll-wallet-helper/actions/workflows/test.yml/badge.svg)](https://github.com/roycoprotocol/weiroll-wallet-helper/actions/workflows/test.yml)
 
 ## Overview
 
