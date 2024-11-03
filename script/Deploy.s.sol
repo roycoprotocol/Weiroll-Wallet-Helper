@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "forge-std/Script.sol";
 
 // Import the PredepositExecutor contract and its dependencies
-import "src/WeirollWalletHelper.flattened.sol";
+import "src/WeirollWalletHelper.sol";
 
 // Deployment commands:
 // 1. forge flatten --output src/WeirollWalletHelper.flattened.sol src/WeirollWalletHelper.sol
